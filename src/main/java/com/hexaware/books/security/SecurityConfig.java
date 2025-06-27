@@ -40,7 +40,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-            		.anyRequest().permitAll()             // Protect all other endpoints
+            		.requestMatchers(
+                            "/api/auth/**",             // Allow register & login
+                            "/swagger-ui/**",           // Swagger UI
+                            "/swagger-ui.html",
+                            "/v3/api-docs/**"           // Swagger OpenAPI docs
+                        ).permitAll()
+                        .anyRequest().authenticated()  // ✅ Require JWT for all other requests            // Protect all other endpoints
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No session, use JWT
